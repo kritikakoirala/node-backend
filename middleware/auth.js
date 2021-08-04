@@ -36,10 +36,6 @@ const auth = async (req, res, next) => {
       }
     })
   }
-  // console.log(token)
-
-
-  // eyJhbGciOiJIUzI1NiJ9.eyJfaWQiOiI2MTA4ZTNiMGUxNGM1Yzc4ZjgwYjliNTIiLCJmaXJzdF9uYW1lIjoiS3JpdGlrYSIsImxhc3RfbmFtZSI6ImtvaXJhbGEiLCJlbWFpbCI6IktyaXRpa2FAZ21haWwuY29tIiwicGFzc3dvcmQiOiIkMmEkMTAkYTZMR0N4UkhzM1lmY3dXY1JIQnoxdTlZdXpDWGhMYnZ6WkxYem45UzVNZzYyT3A0WmYxeGUiLCJfX3YiOjB9.GcBTpNfWQxRsErXoqzFu73SbRCLmMYiw7CiltoVD82c
 }
 
 module.exports = auth

@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken')
 const transporter = require('../../middleware/nodemailer')
 const { Error } = require('mongoose')
 
+// function to signup
 const signUp = async(req, res) => {
     const existingEmail = await User.findOne({email:req.body.email})
     if(existingEmail){
@@ -41,7 +42,7 @@ const signUp = async(req, res) => {
     }
 }
 
-
+// functiong for sending otp after signup
 const sendOtp = (otp, email) =>{
   var mailOptions={
     to: email,
@@ -62,7 +63,7 @@ const sendOtp = (otp, email) =>{
 
 // verify the otp entered by the user
 
-const verify = async(req, res)=>{
+const verify = async(req, res)=> {
   // find the email
   const user = await User.findOne({otp:req.body.otp});
   if(user){
@@ -105,4 +106,42 @@ const login = async (req, res) => {
 
 }
 
-module.exports = {signUp, login, verify}
+// file upload function
+const fileUpload = async (req, res) => {
+
+  // multiple file send url
+  if(req.files.length>1){
+    const filesArr = []
+    req.files.map(file=>{
+      return(
+        filesArr.push('http://localhost:3001/'+file.filename)
+      )
+    })
+    res.json({
+
+      url:filesArr,
+      message:"Multiple files uploaded successfully"
+    })
+  }else{
+    // single file send url
+    console.log(req)
+    res.json({
+      url:'http://localhost:3001/'+req.files[0].filename,
+      message:"Single file uploaded successfully"
+    })
+  }
+}
+
+//delete existing file from folder
+// const deleteexfile = () => {
+//   fs.unlink("upload/" + "\sd - Copy (2).png", (err => {
+//     if (err) console.log(err);
+//     else {
+//       console.log("http://:4000/1626777694436_big_buck_bunny_720p_20mb.mp4null10000");
+//     }
+//   }));
+//   console.log('running delet file');
+// }
+// deleteexfile()
+
+module.exports = {signUp, login, verify, fileUpload}

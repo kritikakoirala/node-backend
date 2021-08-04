@@ -20,5 +20,8 @@ app.use('/api', indexRoute)
 
 app.get('/', auth, (req, res)=>{res.send('running')})
 
+// make uploads folder static
+app.use('/', express.static("uploads"))
+
 // connect server
 app.listen(port, ()=>{console.log("server is running")})

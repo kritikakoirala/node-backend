@@ -1,8 +1,14 @@
+
+// import models
 const {User, createValidator} = require('../../models/user')
+const {Invoice} = require('../../models/invoice')
+const {Product, productValidator, updateValidator} = require('../../models/products')
+
+
 const bc = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const transporter = require('../../middleware/nodemailer')
-const { Error } = require('mongoose')
+const { Error, Mongoose } = require('mongoose')
 
 // function to signup
 const signUp = async(req, res) => {
@@ -144,4 +150,111 @@ const fileUpload = async (req, res) => {
 // }
 // deleteexfile()
 
-module.exports = {signUp, login, verify, fileUpload}
+
+// CRUD functionality functions
+
+const add = async (req, res) => {
+  // console.log(req)
+
+  // const file = new File({
+  //   name:'http://localhost:3001'+req.files[0].filename
+  // })
+  const products = new Product({
+    product_name: req.body.product_name, 
+    product_description: req.body.product_description,
+    product_price : req.body.product_price,
+    thumbnail:'http://localhost:3001/'+req.files[0].filename
+  })
+
+  const {error} = productValidator(req.body)
+
+  if(error){
+    res.json({
+      status:false,
+      message: error.details[0].message
+    })
+  }
+
+  await products.save();
+
+  res.json({
+    status:true, 
+    message:"Product has been successfully added"
+  })
+
+}
+
+const getAll = async (req, res) =>{
+  try{
+    const products = await Product.find()
+    res.json(products)
+  }catch(err){
+    res.json({
+      status:false,
+      message:err
+    })
+  }
+}
+
+const update = async(req, res) =>{
+  
+    const {error} = updateValidator(req.body)
+    if(error){
+      res.json({
+        status:false,
+        message:error.details[0].message
+      })
+    }else{
+      const productUpdate = await Product.findOneAndUpdate({_id:req.params.id}, {
+        product_name:req.body.product_name,
+        product_description:req.body.product_description,
+        product_price:req.body.product_price,
+        thumbnail:req.files[0].filename
+  
+      })
+  
+      res.json({
+        status:true,
+        message:"Product updated successfully",
+        data:productUpdate
+      })
+    }
+}
+
+const getOne = async(req, res)=>{
+  const oneProduct = await Product.findById({_id:req.params.id})
+
+  res.json({
+    data:oneProduct
+  })
+}
+
+const deleteById = async (req, res) => {
+  const deleteProduct = await Product.findByIdAndDelete({_id:req.params.id})
+
+  res.json({
+    message:"Product Successfully deleted"
+  })
+}
+
+const postInvoice = async (req, res) =>{
+  console.log(req.body)
+  const invoice = new Invoice({
+    product_detail: req.body.product_detail
+  })
+
+  await invoice.save()
+
+  res.json({
+    message:invoice
+  })
+}
+
+const getInvoice = async (req,res)=>{
+  const invoiceId  = await Invoice.find().populate("product_detail")
+  res.json({
+    mesage:invoiceId
+  })
+}
+
+module.exports = {signUp, login, verify, fileUpload, add, getAll, getOne, update, deleteById, postInvoice, getInvoice}
